@@ -43,4 +43,3 @@ export function validateGuess(targetword, guess) {
     // Otherwise, the game continues
     return 'continue';
   }
-  

@@ -13,6 +13,8 @@ const BoardModule = () => {
       .map(() => Array(5).fill(' '))
   );
 
+  const boardRef = useRef(null);
+
   const [currentRow, setCurrentRow] = useState(0);// set current row
   const [currentCol, setCurrentCol] = useState(0);// set current column
 
@@ -95,74 +97,75 @@ const getTileColor = (rowIndex, colIndex) => {
 
 
 // handle submission
-  const handleSubmit = () => {
-    setBoard((prevBoard) => {
-      // Validate current row completion
-      if (currentCol < 5) {
-        alert('Complete the row before submitting.');
-        return prevBoard; // No state change
-      }
-  
-      // Creating a copy of the board (not modifying it directly)
-      const newBoard = prevBoard.map((row) => [...row]);
-  
-      // Get the guess and check its validity
-      const guess = newBoard[currentRow].join('');
-      console.log('Guess:', guess);
-      console.log('Target Word:', targetWord);
-  
-      const result = validateGuess(targetWord.current, guess);
-      console.log('Result:', result);
-  
-      const gameStatus = checkVictory(result, currentRow);
-      console.log('Game Status:', gameStatus);
+const handleSubmit = () => {
+  setBoard((prevBoard) => {
+    return prevBoard.map((row, rowIndex) => [...row]); // safe copy
+  });
 
-      setKeyboardColors((prevColors) => {
-        const newColors = { ...prevColors };
-        guess.split('').forEach((char, index) => {
-          const upperChar = char.toUpperCase(); // Ensure uppercase comparison
-          if (result[index] === 'correct') {
-            newColors[upperChar] = 'bg-correct';
-          } else if (result[index] === 'misplaced' && newColors[upperChar] !== 'bg-green-500') {
-            newColors[upperChar] = 'bg-misplaced';
-          } else if (!newColors[upperChar]) {
-            newColors[upperChar] = 'bg-incorrect';
-          }
-        });
-        return newColors;
-      });
-      
+  setCurrentRow((prevRow) => {
+    if (currentCol < 5) {
+      alert("Complete the row before submitting.");
+      return prevRow;
+    }
 
-      //change tile color
-      setValidationResult((prevResult) => {
-        const newResult = prevResult.map((row) => [...row]);
-        result.forEach((res, index) => {
-          newResult[currentRow][index] = res;
-        });
-        return newResult;
+    const guess = board[prevRow].join("");
+    console.log("Guess:", guess);
+    console.log("Target Word:", targetWord.current);
+
+    const result = validateGuess(targetWord.current, guess);
+    console.log("Result:", result);
+
+    const gameStatus = checkVictory(result, prevRow);
+    console.log("Game Status:", gameStatus);
+
+    // Update tile validation
+    setValidationResult((prevResult) => {
+      const newResult = prevResult.map((row) => [...row]);
+      result.forEach((res, index) => {
+        newResult[prevRow][index] = res;
       });
-      // check if player won/lost
-      if (gameStatus === 'won') {
-        alert('Congratulations! You won the game!');
-        // Reset func goes here
-        return newBoard; // Stop further updates after winning
-      } else if (gameStatus === 'lost') {
-        alert('Sorry, you lost the game!');
-        // Reset func goes here
-        return newBoard; // Stop further updates after losing
-      }
-  
-      // Proceed to the next row if game is not won/lost
-      if (currentRow < 5) {
-        setCurrentRow((prevRow) => prevRow + 1);
-        setCurrentCol(0);
-      } else {
-        alert('You have reached the last row!');
-      }
-  
-      return newBoard; // Return the updated board state
+      return newResult;
     });
-  };
+
+    // Update keyboard colors
+    setKeyboardColors((prevColors) => {
+      const newColors = { ...prevColors };
+      guess.split("").forEach((char, index) => {
+        const upperChar = char.toUpperCase();
+        if (result[index] === "correct") {
+          newColors[upperChar] = "bg-correct";
+        } else if (
+          result[index] === "misplaced" &&
+          newColors[upperChar] !== "bg-green-500"
+        ) {
+          newColors[upperChar] = "bg-misplaced";
+        } else if (!newColors[upperChar]) {
+          newColors[upperChar] = "bg-incorrect";
+        }
+      });
+      return newColors;
+    });
+
+    // Win / lose conditions
+    if (gameStatus === "won") {
+      alert("Congratulations! You won the game!");
+      return prevRow; // stop updates
+    } else if (gameStatus === "lost") {
+      alert("Sorry, you lost the game!");
+      return prevRow; // stop updates
+    }
+
+    // Proceed to next row
+    if (prevRow < 5) {
+      setCurrentCol(0);
+      return prevRow + 1;
+    } else {
+      alert("Game over ! the word was: "+targetWord.current);
+      return prevRow;
+    }
+  });
+};
+
   
   
 
@@ -178,6 +181,33 @@ const getTileColor = (rowIndex, colIndex) => {
     console.log('Board State:', board);
   }, [board, currentRow, currentCol]);
 
+const resetBoard = () => {
+  setBoard(
+    Array(6)
+      .fill()
+      .map(() => Array(5).fill(' '))
+  );
+
+  setValidationResult(
+    Array(6)
+      .fill()
+      .map(() => Array(5).fill(' '))
+  );
+
+  setCurrentRow(0);
+  setCurrentCol(0);
+  setKeyboardColors({});
+  targetWord.current = RandomWord(); // generate a new word
+
+  console.log("Game has been reset. New word:", targetWord.current);
+
+  if (boardRef.current) {
+    boardRef.current.focus();
+  }
+};
+
+
+
   return (
     <main className=''>
       <div className='w-full h-11 absolute bg-transparent flex items-center justify-center'>
@@ -187,6 +217,7 @@ const getTileColor = (rowIndex, colIndex) => {
         className="board-module"
         tabIndex={0}
         style={{ outline: 'none' }}
+        ref={boardRef}
       >
         
         <div className="board">
@@ -208,12 +239,11 @@ const getTileColor = (rowIndex, colIndex) => {
         </div>
         
       </div>
-      
       <div className='w-full flex items-center justify-center'>
         <KeyboardModule onKeyPress={handleKeyPress}  keyboardColors={keyboardColors}/>
       </div>
       <div className='w-full h-10 flex items-center justify-center'>
-        <button className='w-1/5 h-12 bg-key_bg rounded-lg font-bold text-2xl text-slate-200 border-2 border-green-500' >RESET</button>
+        <button className='w-1/5 h-12 bg-key_bg rounded-lg font-bold text-2xl text-slate-200 border-2 border-green-500' onClick={resetBoard} >RESET</button>
       </div>
     </main>
   );
