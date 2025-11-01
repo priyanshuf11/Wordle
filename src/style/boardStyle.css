@@ -34,3 +34,12 @@
   .bg-default {
     background-color: #000000; /* or whatever default color you prefer */
   }
+
+  @keyframes fadeIn {
+  0% { opacity: 0; transform: translate(-50%, -20px); }
+  100% { opacity: 1; transform: translate(-50%, 0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}

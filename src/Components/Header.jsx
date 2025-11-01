@@ -10,15 +10,16 @@ const Header = () => {
   return (
     <>
       <header className="h-12 flex items-center justify-between text-white py-3 text-base bg-blackbg border-b-[1.5px] border-">
-        <div>WORD GESS</div>
+        <div><span className='px-2 font-bold text-2xl flex gap-2'> <p className='text-green-400'>Word</p><p className='text-yellow-400'>Guess</p> </span></div>
 
-        <menu className="w-1/2 flex items-center justify-center">
+        <menu className="w-1/3 flex items-center justify-between">
           <div
             onClick={toggleRulesVisibility}
-            className="h-8 w-20 bg-blackbg my-1 flex items-center justify-center cursor-pointer border-[1.3px] border-white rounded-xl"
+            className="h-8 w-20 bg-blackbg my-1 flex items-center justify-center cursor-pointer border-[1.3px] border-white rounded-xl hover:bg-slate-100 hover:text-black transition-colors"
           >
             Rules
           </div>
+          <div className='mx-6 border rounded-lg px-2 cursor-pointer hover:bg-slate-100 hover:text-black'>A</div>
         </menu>
       </header>
 

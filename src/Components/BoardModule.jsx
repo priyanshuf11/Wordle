@@ -4,6 +4,7 @@ import KeyboardModule from './KeyboardModule.jsx';
 
 import { validateGuess, checkVictory } from '../utility/gameLogic.js';// import logic
 import {RandomWord} from '../utility/words.js' //for random word generation
+import fiveLetterWords from '../utility/fiveLetterWords.json'
 
 // set the initial board with empty tiles
 const BoardModule = () => {
@@ -17,6 +18,8 @@ const BoardModule = () => {
 
   const [currentRow, setCurrentRow] = useState(0);// set current row
   const [currentCol, setCurrentCol] = useState(0);// set current column
+  const [dialogMessage, setDialogMessage] = useState(null);
+
 
   const [keyboardColors, setKeyboardColors] = useState({});
 
@@ -109,6 +112,12 @@ const handleSubmit = () => {
     }
 
     const guess = board[prevRow].join("");
+
+    if (!fiveLetterWords.includes(guess.toLocaleLowerCase())) {
+      
+      return prevRow;
+    }
+
     console.log("Guess:", guess);
     console.log("Target Word:", targetWord.current);
 
@@ -148,10 +157,10 @@ const handleSubmit = () => {
 
     // Win / lose conditions
     if (gameStatus === "won") {
-      alert("Congratulations! You won the game!");
+      showDialog("🎉 Congratulations! You won!");
       return prevRow; // stop updates
     } else if (gameStatus === "lost") {
-      alert("Sorry, you lost the game!");
+      showDialog("Game over! The word was: " + targetWord.current);
       return prevRow; // stop updates
     }
 
@@ -160,13 +169,20 @@ const handleSubmit = () => {
       setCurrentCol(0);
       return prevRow + 1;
     } else {
-      alert("Game over ! the word was: "+targetWord.current);
+      showDialog("Game over! The word was: " + targetWord.current);
       return prevRow;
     }
   });
 };
 
-  
+ const showDialog = (message) => {
+  setDialogMessage(message);
+
+  setTimeout(() => {
+    setDialogMessage(null); // hide after 3s
+  }, 3000);
+};
+ 
   
 
   useEffect(() => {
@@ -182,6 +198,7 @@ const handleSubmit = () => {
   }, [board, currentRow, currentCol]);
 
 const resetBoard = () => {
+  showDialog("The word was: " + targetWord.current);
   setBoard(
     Array(6)
       .fill()
@@ -240,11 +257,20 @@ const resetBoard = () => {
         
       </div>
       <div className='w-full flex items-center justify-center'>
-        <KeyboardModule onKeyPress={handleKeyPress}  keyboardColors={keyboardColors}/>
+        <KeyboardModule onKeyPress={handleKeyPress} keyboardColors={keyboardColors} />
       </div>
       <div className='w-full h-10 flex items-center justify-center'>
         <button className='w-1/5 h-12 bg-key_bg rounded-lg font-bold text-2xl text-slate-200 border-2 border-green-500' onClick={resetBoard} >RESET</button>
       </div>
+
+      {dialogMessage && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 
+                  bg-gray-900 text-white px-6 py-3 rounded-lg shadow-lg 
+                  animate-fadeIn z-50">
+          {dialogMessage}
+        </div>
+      )}
+
     </main>
   );
 };
