@@ -1,12 +1,23 @@
-.key{
-    @apply  bg-key_bg w-[48px] h-[58px] mx-[3px] rounded-lg text-white text-2xl font-bold mb-2  pb-1 text-center;
+.key {
+  @apply bg-key_bg 
+         w-[9vw] sm:w-[58px] 
+         h-[11vw] sm:h-[58px] 
+         mx-[0.6vw] sm:mx-[3px] 
+         rounded-md sm:rounded-lg
+         text-white 
+         text-[5vw] sm:text-2xl 
+         font-bold 
+         pb-1 
+         text-center 
+         flex items-center justify-center;
 }
+
 .sidespace{
-    @apply h-[58px] w-[21px] bg-transparent 
+    @apply h-[58px] w-[0px] bg-transparent sm:w-[21px] 
 }
 
 .func_key{
-    @apply w-[89px] h-[65px] bg-key_bg mb-2 rounded-lg text-white text-sm font-bold mx-1 flex items-center justify-center pb-1;
+    @apply w-[79px] sm:w-[89px] h-[55px] sm:h-[65px] bg-key_bg mb-2 rounded-lg text-white text-sm font-bold mx-1 flex items-center justify-center pb-1;
 }
 
 .bg-correct {

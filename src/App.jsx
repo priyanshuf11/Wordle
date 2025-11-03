@@ -7,10 +7,13 @@ import Header from './Components/Header.jsx'
 import BoardModule from './Components/BoardModule.jsx'
 
 const App = () => {
+
+  const [difficulty, setDifficulty] = useState("easy");
+
   return (
     <>
-    <Header/>
-    <BoardModule/>
+    <Header setDifficulty={setDifficulty}/>
+    <BoardModule difficulty={difficulty}/>
     </>
   )
 }

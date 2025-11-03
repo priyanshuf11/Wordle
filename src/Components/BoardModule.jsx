@@ -7,7 +7,7 @@ import {RandomWord} from '../utility/words.js' //for random word generation
 import fiveLetterWords from '../utility/fiveLetterWords.json'
 
 // set the initial board with empty tiles
-const BoardModule = () => {
+const BoardModule = ({difficulty}) => {
   const [board, setBoard] = useState(
     Array(6)
       .fill()
@@ -30,8 +30,14 @@ const [validationResult, setValidationResult] = useState(
     .map(() => Array(5).fill(' '))
 );
 
-const targetWord = useRef(RandomWord());
-  console.log(targetWord);
+// Defensive check
+const targetWord = useRef(RandomWord(difficulty));
+
+useEffect(() => {
+  targetWord.current = RandomWord(difficulty);
+  console.log("Difficulty changed:", difficulty, "New target word:", targetWord.current);
+}, [difficulty]);
+
 
 // to change bg of tile
 const getTileColor = (rowIndex, colIndex) => {
@@ -214,7 +220,7 @@ const resetBoard = () => {
   setCurrentRow(0);
   setCurrentCol(0);
   setKeyboardColors({});
-  targetWord.current = RandomWord(); // generate a new word
+  targetWord.current = RandomWord(difficulty); // generate a new word
 
   console.log("Game has been reset. New word:", targetWord.current);
 
@@ -226,7 +232,7 @@ const resetBoard = () => {
 
 
   return (
-    <main className=''>
+    <main className='relative flex flex-col items-center justify-start min-h-screen w-full overflow-x-hidden px-2 sm:px-0'>
       <div className='w-full h-11 absolute bg-transparent flex items-center justify-center'>
         <div className='w-auto h-10 bg-black text-white '></div>
       </div>
@@ -246,7 +252,9 @@ const resetBoard = () => {
               {row.map((char, colIndex) => (
                 <div
                   key={colIndex}
-                  className={`tile h-full w-[52.5px] mx-[2px] border-[2px] border-borderColor text-white text-4xl font-bold font-sans flex items-center justify-center pb-2 rounded-sm ${getTileColor(rowIndex, colIndex)}`}
+                  className={`tile aspect-square w-[14vw] sm:w-[52px] border-2 border-borderColor 
+  text-[5vw] sm:text-4xl font-bold flex items-center justify-center 
+  rounded-sm ${getTileColor(rowIndex, colIndex)}`}
                 >
                   {char}
                 </div>
@@ -260,7 +268,7 @@ const resetBoard = () => {
         <KeyboardModule onKeyPress={handleKeyPress} keyboardColors={keyboardColors} />
       </div>
       <div className='w-full h-10 flex items-center justify-center'>
-        <button className='w-1/5 h-12 bg-key_bg rounded-lg font-bold text-2xl text-slate-200 border-2 border-green-500' onClick={resetBoard} >RESET</button>
+        <button className='w-1/3 sm:w-1/5 h-12 bg-key_bg rounded-lg font-bold text-2xl text-slate-200 border-2 border-green-500' onClick={resetBoard} >RESET</button>
       </div>
 
       {dialogMessage && (

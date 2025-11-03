@@ -10,8 +10,8 @@ const KeyboardModule = ({onKeyPress, keyboardColors}) => {
 
 
   return (
-    <div className='mt-10 mb-3 w-[560px] h-[200px] bg-blackbg'>
-      <div className='row1 flex align-top items-center justify-center'>
+    <div className='mt-10 mb-3 w-[100vw] max-w-[560px] h-auto bg-blackbg flex flex-col gap-2 p-2 rounded-lg '>
+      <div className=' flex align-top items-center justify-center'>
         {
           row1.map((char,charIndex)=>(
             <button key={charIndex} className={`key ${getKeyColor(char)}`} onClick={() => onKeyPress(char)}>
